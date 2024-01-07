@@ -100,7 +100,7 @@ productSales = new Vue({
             this.index = id;
             this.variant = "modalDetail";
             this.modalHeight = true;
-            console.log(this.scrollPosition);
+            // console.log(this.scrollPosition);
         },
         modalCartOpen() {
             this.scrollPosition = window.scrollY;
@@ -108,7 +108,7 @@ productSales = new Vue({
             window.scrollTo(0, 0);
             this.modalHeight = false;
             this.variant = "modalCart";
-            console.log(this.scrollPosition);
+            // console.log(this.scrollPosition);
         },
         modalNavMobileOpen() {
             this.scrollPosition = window.scrollY;
@@ -117,7 +117,7 @@ productSales = new Vue({
             this.navMobile = true;
             this.modalHeight = false;
             this.variant = "modalNavMobile";
-            console.log(this.scrollPosition);
+            // console.log(this.scrollPosition);
         },
 
         // -- modal close --
@@ -130,21 +130,21 @@ productSales = new Vue({
             this.reqSize = "";
             this.packaging = "-";
             this.variant = "";
-            console.log(this.scrollPosition);
+            // console.log(this.scrollPosition);
         },
         modalCartClose() {
             window.scrollTo(0, this.scrollPosition);
             this.modalDisplay = false;
             this.modalHeight = true;
             this.variant = "";
-            console.log(this.scrollPosition);
+            // console.log(this.scrollPosition);
         },
         modalNavMobileClose() {
             window.scrollTo(0, this.scrollPosition);
             this.modalDisplay = false;
             this.navMobile = false;
             this.variant = "";
-            console.log(this.scrollPosition);
+            // console.log(this.scrollPosition);
         },
         // modalClose() {
         //     window.scrollTo(0, scrollPosition);
@@ -180,7 +180,7 @@ productSales = new Vue({
             } 
         },
         urlFill(isRepeat, fill) {
-            this.waUrl += encodeURIComponent(
+            let url = encodeURIComponent(
                 (isRepeat ? "" : "Hallo, Saya ingin memesan\n") +
                 "Produk: " + (isRepeat? fill.size : this.products[this.index].name) + "\n" +
                 "Ukuran: " + (isRepeat ? fill.size : this.size) + "\n" +
@@ -189,18 +189,19 @@ productSales = new Vue({
                 "Packaging: " + (isRepeat ? fill.packaging : this.packaging) +
                 (isRepeat? "\n\n" : "")
               );
+            return url
         },
         buy(buyVariant) {
             if (buyVariant === "buyCartItems") {
                 this.waUrl = "https://wa.me/" + this.waNum + "?text=";
                 this.waUrl += encodeURIComponent("Hallo, Saya ingin memesan\n\n");
                 for (let i = 0; i < this.cartItems.length; i++) {
-                    this.urlFill(true, this.cartItems[i]);
+                    this.waUrl += this.urlFill(true, this.cartItems[i]);
                 }
                 this.waUrl += encodeURIComponent("Terimakasih")
             } else if(buyVariant === "buyItem") {
                     this.waUrl = "https://wa.me/" + this.waNum + "?text=";
-                    this.urlFill(false);
+                    this.waUrl += this.urlFill(false);
                     this.waUrl += encodeURIComponent("\n\nTerimakasih");
                 }
             window.location.href = this.waUrl;
