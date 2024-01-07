@@ -2,7 +2,7 @@ productSales = new Vue({
     el : '#productSales',
     data : {
         modalHeight: true,
-        variant : 0,
+        variant : "",
         scrollPosition: 0,
         modalDisplay: false,
         index: 0,
@@ -10,7 +10,9 @@ productSales = new Vue({
         qty: 1,
         reqSize: "",
         packaging: "-",
-        navMobile : false, 
+        navMobile : false,
+        waNum: "6281529371587", 
+        waUrl: "",
         informasi: [
             "Hatarika",
             "Jl. Sudirman No.xx",
@@ -73,38 +75,91 @@ productSales = new Vue({
         ],
     },
     methods: {
-        modalOpen(id, variant) {
-            scrollPosition = window.scrollY;
-            window.scrollTo(0, 0);
+        // modalOpen(id, variant) {
+        //     scrollPosition = window.scrollY;
+        //     window.scrollTo(0, 0);
+        //     this.modalDisplay = true;
+        //     if (variant === 1) {
+        //         this.variant = variant;
+        //         this.index = id;
+        //     } else if (variant === 2) {
+        //         this.variant = variant;
+        //         this.modalHeight = false;            
+        //     } else if (variant === 3) {
+        //         this.variant = variant;
+        //         this.navMobile = true;
+        //         this.modalHeight = false;
+        //     }
+        // },
+
+        // -- modal open --
+        modalDetailOpen(id) {
+            this.scrollPosition = window.scrollY;
             this.modalDisplay = true;
-            if (variant === 1) {
-                this.variant = variant;
-                this.index = id;
-                console.log(id); 
-            } else if (variant === 2) {
-                this.variant = variant;
-                this.modalHeight = false;            
-            } else if (variant === 3) {
-                this.variant = variant;
-                this.navMobile = true;
-                this.modalHeight = false;
-            }
-        },
-        
-        modalClose() {
-            window.scrollTo(0, scrollPosition);
-            this.modalDisplay = false;
+            window.scrollTo(0, 0);
+            this.index = id;
+            this.variant = "modalDetail";
             this.modalHeight = true;
+            console.log(this.scrollPosition);
+        },
+        modalCartOpen() {
+            this.scrollPosition = window.scrollY;
+            this.modalDisplay = true;
+            window.scrollTo(0, 0);
+            this.modalHeight = false;
+            this.variant = "modalCart";
+            console.log(this.scrollPosition);
+        },
+        modalNavMobileOpen() {
+            this.scrollPosition = window.scrollY;
+            this.modalDisplay = true;
+            window.scrollTo(0, 0);
+            this.navMobile = true;
+            this.modalHeight = false;
+            this.variant = "modalNavMobile";
+            console.log(this.scrollPosition);
+        },
+
+        // -- modal close --
+        modalDetailClose() {
+            window.scrollTo(0, this.scrollPosition);
+            this.modalDisplay = false;
             this.index = 0;
             this.size = 0;
             this.qty = 1;
             this.reqSize = "";
             this.packaging = "-";
-            this.navMobile = false;
+            this.variant = "";
+            console.log(this.scrollPosition);
         },
-
+        modalCartClose() {
+            window.scrollTo(0, this.scrollPosition);
+            this.modalDisplay = false;
+            this.modalHeight = true;
+            this.variant = "";
+            console.log(this.scrollPosition);
+        },
+        modalNavMobileClose() {
+            window.scrollTo(0, this.scrollPosition);
+            this.modalDisplay = false;
+            this.navMobile = false;
+            this.variant = "";
+            console.log(this.scrollPosition);
+        },
+        // modalClose() {
+        //     window.scrollTo(0, scrollPosition);
+        //     this.modalDisplay = false;
+        //     this.modalHeight = true;
+        //     this.index = 0;
+        //     this.size = 0;
+        //     this.qty = 1;
+        //     this.reqSize = "";
+        //     this.packaging = "-";
+        //     this.navMobile = false;
+        // },
         qtyPlus() {
            this.qty = parseInt(this.qty) + 1;
+        //    this.qty += 1;
         },
 
         qtyMinus() {
@@ -124,34 +179,32 @@ productSales = new Vue({
                 this.qty = 0;
             } 
         },
-
-        buy(buy) {
-            if (buy === "buyCart") {
-                url = "https://wa.me/6281529371587?text=" + encodeURIComponent("Hallo, Saya ingin memesan\n\n");
-                for (let i = 0; i < this.cartItems.length; i++) {
-                url += encodeURIComponent(
-                    "Produk: " + this.cartItems[i].name + "\n" +
-                    "Ukuran: " + this.cartItems[i].size + "\n" +
-                    "Jumlah: " + this.cartItems[i].qty + "\n" +
-                    "Request Size: " + this.cartItems[i].reqSize + "\n" +
-                    "Packaging: " + this.cartItems[i].packaging + "\n\n" );
-                }
-                url += encodeURIComponent("Terimakasih")
-            } else if(buy === "buy") {
-                url = "https://wa.me/6281529371587?text=" +
-                encodeURIComponent(
-                    "Hallo, Saya ingin memesan\n" +
-                    "Produk: " + this.products[this.index].name + "\n" +
-                    "Ukuran: " + this.size + "\n" +
-                    "Jumlah: " + this.qty + "\n" +
-                    "Request Size: " + (this.reqSize ? this.reqSize : "-") + "\n" +
-                    "Packaging: " + this.packaging + "\n\nTerimakasih"
-                    );
-                }
-            window.location.href = url;
+        urlFill(isRepeat, fill) {
+            this.waUrl += encodeURIComponent(
+                (isRepeat ? "" : "Hallo, Saya ingin memesan\n") +
+                "Produk: " + (isRepeat? fill.size : this.products[this.index].name) + "\n" +
+                "Ukuran: " + (isRepeat ? fill.size : this.size) + "\n" +
+                "Jumlah: " + (isRepeat ? fill.qty : this.qty) + "\n" +
+                "Request Size: " + (isRepeat ? fill.reqSize : this.reqSize) + "\n" +
+                "Packaging: " + (isRepeat ? fill.packaging : this.packaging) +
+                (isRepeat? "\n\n" : "")
+              );
         },
-        randomAddCart() {
-
+        buy(buyVariant) {
+            if (buyVariant === "buyCartItems") {
+                this.waUrl = "https://wa.me/" + this.waNum + "?text=";
+                this.waUrl += encodeURIComponent("Hallo, Saya ingin memesan\n\n");
+                for (let i = 0; i < this.cartItems.length; i++) {
+                    this.urlFill(true, this.cartItems[i]);
+                }
+                this.waUrl += encodeURIComponent("Terimakasih")
+            } else if(buyVariant === "buyItem") {
+                    this.waUrl = "https://wa.me/" + this.waNum + "?text=";
+                    this.urlFill(false);
+                    this.waUrl += encodeURIComponent("\n\nTerimakasih");
+                }
+            window.location.href = this.waUrl;
+            // console.log(this.waUrl);
         },
         addToCart() {
             let addCart = {
@@ -173,9 +226,9 @@ productSales = new Vue({
         },
         deleteCartItem(id) {
             this.cartItems.splice(id, 1);
-            this.cartItems = this.cartItems.map((item, index) => {
-                return { ...item, index: index };
-              });
+                this.cartItems = this.cartItems.map((item, index) => {
+                    return { ...item, index: index };
+                });
         },
         displayedPrice(number) {
             const formattedString = number.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' });

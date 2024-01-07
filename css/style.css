@@ -282,7 +282,7 @@ main {
     font-size: 20px!important;
 }
 
-.modal-container-detail {
+.modal-container {
     background-color: rgba(0, 0, 0, 0.3);
     z-index: 99;
     position: absolute;

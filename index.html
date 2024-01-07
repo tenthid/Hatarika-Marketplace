@@ -19,7 +19,7 @@
                     <h1 class="color2">Hatarika <span class="color1">Shoes</span></h1>
                 </div>
                 <div class="nav-content-container">
-                        <div @click="modalOpen(0, 3)" class="menu-icon">
+                        <div @click="modalNavMobileOpen()" class="menu-icon">
                             <span class="bar"></span><span class="bar"></span><span class="bar"></span>
                         </div>
                     <div class="nav-content">
@@ -43,7 +43,7 @@
                         </div>
                         <a href="index.html">Sale</a>
                     </div>
-                    <a style="cursor: pointer;" @click="modalOpen(0, 2)" id="navLogin"> 
+                    <a style="cursor: pointer;" @click="modalCartOpen()" id="navLogin"> 
                         <div class="cart-logo">
                             <i class="fa-solid fa-cart-shopping"></i>
                             {{cartItems.length}}
@@ -64,7 +64,7 @@
                     <div class="card-img-container">
                         <img :src="product.imgSrc" alt="product.altText">
                     </div>
-                    <a @click="modalOpen(product.no, 1)">Detail</a>
+                    <a @click="modalDetailOpen(product.no)">Detail</a>
                     <h1> {{ product.name }} </h1>
                     <h1 v-if="!product.discount"> {{ displayedPrice(product.price) }}</h1>
                     <div v-else-if="product.discount"> 
@@ -73,11 +73,11 @@
                     </div>
                 </div>
             </div>
-            <div class="modal-container-detail" :style="{ display: modalDisplay ? 'flex' : 'none',  height: modalHeight? 'fit-content' : '100vh', padding: modalHeight? '70px 0px' : '0px', justifyContent: navMobile? 'end' : 'center'}">
-                <div v-if="variant === 1" class="modal-detail">
+            <div class="modal-container" :style="{ display: modalDisplay ? 'flex' : 'none',  height: modalHeight? 'fit-content' : '100vh', padding: modalHeight? '70px 0px' : '0px', justifyContent: navMobile? 'end' : 'center'}">
+                <div v-if="variant === 'modalDetail'" class="modal-detail">
                     <div class="modal-detail-header">
                         <h1>Detail Product</h1>
-                        <a @click="modalClose()" style="cursor: pointer; font-size: 20px; font-weight: bold; font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;">X</a>
+                        <a @click="modalDetailClose()" style="cursor: pointer; font-size: 20px; font-weight: bold; font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;">X</a>
                     </div>
                     <div class="modal-detail-main">
                         <div class="modal-detail-content1">
@@ -100,7 +100,7 @@
                                 <br>
                                 <label style="font-size: 20px; display: flex; align-items: center; gap: 3px;" class="color1" for="qty">Quantity
                                     <button @click="qtyMinus()" class="qty-btn red-btn">-</button>
-                                    <input @keyup.up="qtyPlus()" @keyup.down="qtyMinus" @keyup.enter="buy('buy')" @blur="qtyUnFill()" @focus="qtyFill()" class="qty" name="qty" type="text" v-model="qty">
+                                    <input @keyup.up="qtyPlus()" @keyup.down="qtyMinus" @keyup.enter="buy('buyItem')" @blur="qtyUnFill()" @focus="qtyFill()" class="qty" name="qty" type="number" v-model="qty">
                                     <button @click="qtyPlus()" class="qty-btn green-btn">+</button>
                                 </label>
                                 <p class="space">if u can not find your size, please kindly input here!</p>
@@ -119,8 +119,8 @@
                                 </div>
                                 <div>
                                     <hr>
-                                    <button @click="() => { addToCart(); modalClose(); }" class="modal-detail-btn">Add To Cart</button>
-                                    <button @click="buy('buy')" class="modal-detail-btn">Buy Now</button>
+                                    <button @click="() => { addToCart(); modalDetailClose(); }" class="modal-detail-btn">Add To Cart</button>
+                                    <button @click="buy('buyItem')" class="modal-detail-btn">Buy Now</button>
                                 </div>
                             </div>
                         </div>
@@ -156,7 +156,7 @@
                         </div>
                     </div>
                 </div>
-                <div v-else-if="variant === 2" class="modal-cart">
+                <div v-else-if="variant === 'modalCart'" class="modal-cart">
                     <div class="modal-cart-header">
                         <div v-if="cartItems.length === 0">
                             <h1>Keranjang Kosong...</h1>
@@ -164,7 +164,7 @@
                         <div v-else>
                             <h1>Isi Keranjang</h1>
                         </div>
-                        <a @click="modalClose()" style="cursor: pointer; font-size: 20px; font-weight: bold; font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;">X</a>
+                        <a @click="modalCartClose()" style="cursor: pointer; font-size: 20px; font-weight: bold; font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;">X</a>
                     </div>
                     <div v-if="cartItems.length === 0">
                     </div>
@@ -188,21 +188,21 @@
                                 </div>
                             </div>
                             <div class="cart-card-btn">
-                                <button @click="deleteCartItem(item.index)">Delete</button>
+                                <button style="cursor: pointer;" @click="deleteCartItem(item.index)">Delete</button>
                             </div>
                         </div>
                         <div class="modal-cart-buy">
                             <h2>Total:{{ displayedPrice(totalAll()) }}</h2>
                             <div class="cart-card-btn">
-                                <button @click="buy('buyCart')" class="modal-cart-btn">Buy</button>
+                                <button @click="buy('buyCartItems')" class="modal-cart-btn">Buy</button>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div :class="{ 'nav-mobile-active': navMobile, 'nav-mobile': !navMobile }"
-                v-else-if="variant === 3">
+                v-else-if="variant === 'modalNavMobile'">
                     <div class="nav-mobile-header">
-                        <div @click="modalClose()" class="menu-icon">
+                        <div @click="modalNavMobileClose()" class="menu-icon">
                             <span class="bar-open"></span><span class="bar-open"></span><span class="bar-open"></span>
                         </div>
                     </div>
