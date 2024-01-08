@@ -75,6 +75,14 @@ productSales = new Vue({
         ],
     },
     methods: {
+        
+        // -- Function for displayed item price --
+        displayedPrice(number) {
+            const formattedString = number.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' });
+            return formattedString
+        },
+        
+        // -- Modal open function --
         // modalOpen(id, variant) {
         //     scrollPosition = window.scrollY;
         //     window.scrollTo(0, 0);
@@ -91,8 +99,6 @@ productSales = new Vue({
         //         this.modalHeight = false;
         //     }
         // },
-
-        // -- modal open --
         modalDetailOpen(id) {
             this.scrollPosition = window.scrollY;
             this.modalDisplay = true;
@@ -120,7 +126,7 @@ productSales = new Vue({
             // console.log(this.scrollPosition);
         },
 
-        // -- modal close --
+        // -- Modal close function --
         modalDetailClose() {
             window.scrollTo(0, this.scrollPosition);
             this.modalDisplay = false;
@@ -157,6 +163,8 @@ productSales = new Vue({
         //     this.packaging = "-";
         //     this.navMobile = false;
         // },
+
+        // -- Item quantity control function --
         qtyPlus() {
            this.qty = parseInt(this.qty) + 1;
         //    this.qty += 1;
@@ -179,6 +187,8 @@ productSales = new Vue({
                 this.qty = 0;
             } 
         },
+
+        // -- Url build function --
         urlFill(isRepeat, fill) {
             let url = encodeURIComponent(
                 (isRepeat ? "" : "Hallo, Saya ingin memesan\n") +
@@ -191,6 +201,8 @@ productSales = new Vue({
               );
             return url
         },
+
+        // -- Buy function --
         buy(buyVariant) {
             if (buyVariant === "buyCartItems") {
                 this.waUrl = "https://wa.me/" + this.waNum + "?text=";
@@ -207,6 +219,8 @@ productSales = new Vue({
             window.location.href = this.waUrl;
             // console.log(this.waUrl);
         },
+
+        // -- Add and delete cart item function --
         addToCart() {
             let addCart = {
                 imgSrc: this.products[this.index].imgSrc,
@@ -224,18 +238,16 @@ productSales = new Vue({
             this.cartItems = this.cartItems.map((item, index) => {
                 return { ...item, index: index };
               });
-        },
+            },
         deleteCartItem(id) {
             this.cartItems.splice(id, 1);
-                this.cartItems = this.cartItems.map((item, index) => {
-                    return { ...item, index: index };
-                });
+            this.cartItems = this.cartItems.map((item, index) => {
+                return { ...item, index: index };
+            });
         },
-        displayedPrice(number) {
-            const formattedString = number.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' });
-            return formattedString
-        },
-        totalAll() {
+
+        // -- Total cart price function --
+        totalPriceCart() {
             return this.cartItems.reduce((total, item) => total + item.total, 0);
         }
     },

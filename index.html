@@ -100,7 +100,7 @@
                                 <br>
                                 <label style="font-size: 20px; display: flex; align-items: center; gap: 3px;" class="color1" for="qty">Quantity
                                     <button @click="qtyMinus()" class="qty-btn red-btn">-</button>
-                                    <input @keyup.up="qtyPlus()" @keyup.down="qtyMinus" @keyup.enter="buy('buyItem')" @blur="qtyUnFill()" @focus="qtyFill()" class="qty" name="qty" type="number" v-model="qty">
+                                    <input @keydown.up="qtyPlus()" @keydown.down="qtyMinus()" @keyup.enter="buy('buyItem')" @blur="qtyUnFill()" @focus="qtyFill()" class="qty" name="qty" type="text" v-model="qty">
                                     <button @click="qtyPlus()" class="qty-btn green-btn">+</button>
                                 </label>
                                 <p class="space">if u can not find your size, please kindly input here!</p>
@@ -192,7 +192,7 @@
                             </div>
                         </div>
                         <div class="modal-cart-buy">
-                            <h2>Total:{{ displayedPrice(totalAll()) }}</h2>
+                            <h2>Total:{{ displayedPrice(totalPriceCart()) }}</h2>
                             <div class="cart-card-btn">
                                 <button @click="buy('buyCartItems')" class="modal-cart-btn">Buy</button>
                             </div>
